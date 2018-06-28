@@ -12,7 +12,8 @@ export default class Calculator extends React.Component {
         this.state = {
             displayvalue: "0",
             oldValue: 0,
-            selectSymbol: ""
+            selectSymbol: "",
+            clearMode: false
         }
         this.handleKeyPress = this.handleKeyPress.bind(this);
 
@@ -25,8 +26,8 @@ export default class Calculator extends React.Component {
     }
 
     onHandlePress(value) {
-        var displayvalue = (this.state.displayvalue === "0" ? "" : (this.state.displayvalue).toString()) + value;
-        this.setState({ displayvalue })
+        var displayvalue = (this.state.displayvalue === "0" ? "" : this.state.clearMode ? "" : (this.state.displayvalue).toString()) + value;
+        this.setState({ displayvalue, clearMode: false })
     }
 
     onClear() {
@@ -37,65 +38,136 @@ export default class Calculator extends React.Component {
     }
 
     handleDivision() {
-        let oldValue = parseInt(this.state.displayvalue, 10);
-        this.setState({
-            displayvalue: "0",
-            selectSymbol: "/",
-            oldValue
-        })
+        if (!this.state.oldValue) {
+            let oldValue = parseInt(this.state.displayvalue, 10);
+            this.setState({
+                displayvalue: "0",
+                selectSymbol: "/",
+                oldValue
+            })
+        } else {
+            let oldValue = this.getTotaleWithSelectSymbol(this.state.selectSymbol)
+            this.setState({
+                displayvalue: "0",
+                selectSymbol: "/",
+                oldValue
+            })
+        }
+
+
     }
 
     handleSubtraction() {
-        let oldValue = parseInt(this.state.displayvalue, 10);
-        this.setState({
-            displayvalue: "0",
-            selectSymbol: "-",
-            oldValue
-        })
+        if (!this.state.oldValue) {
+            let oldValue = parseInt(this.state.displayvalue, 10);
+            this.setState({
+                displayvalue: "0",
+                selectSymbol: "-",
+                oldValue
+            })
+        } else {
+            let oldValue = this.getTotaleWithSelectSymbol(this.state.selectSymbol)
+            this.setState({
+                displayvalue: "0",
+                selectSymbol: "-",
+                oldValue
+            })
+        }
     }
 
     handleAddition() {
-        let oldValue = parseInt(this.state.displayvalue, 10);
-        this.setState({
-            displayvalue: "0",
-            selectSymbol: "+",
-            oldValue
-        })
+        if (!this.state.oldValue) {
+            let oldValue = parseInt(this.state.displayvalue, 10);
+            this.setState({
+                displayvalue: "0",
+                selectSymbol: "+",
+                oldValue
+            })
+        } else {
+            let oldValue = this.getTotaleWithSelectSymbol(this.state.selectSymbol)
+            this.setState({
+                displayvalue: "0",
+                selectSymbol: "+",
+                oldValue
+            })
+        }
     }
     handleMultiplication() {
-        let oldValue = parseInt(this.state.displayvalue, 10);
-        this.setState({
-            displayvalue: "0",
-            selectSymbol: "*",
-            oldValue
-        })
+        if (!this.state.oldValue) {
+            let oldValue = parseInt(this.state.displayvalue, 10);
+            this.setState({
+                displayvalue: "0",
+                selectSymbol: "*",
+                oldValue
+            })
+        } else {
+            let oldValue = this.getTotaleWithSelectSymbol(this.state.selectSymbol)
+            //eval(parseInt(this.state.oldValue, 10) + this.state.selectSymbol + parseInt(this.state.displayvalue, 10));
+            this.setState({
+                displayvalue: "0",
+                selectSymbol: "*",
+                oldValue
+            })
+        }
     }
+    getTotaleWithSelectSymbol(selectSymbol) {
+        switch (selectSymbol) {
+            case "/":
+                let divisionTotal = parseInt(this.state.oldValue, 10) / parseInt(this.state.displayvalue, 10);
+                return divisionTotal;
+            case "+":
+                let additionTotal = parseInt(this.state.oldValue, 10) + parseInt(this.state.displayvalue, 10);
+                return additionTotal;
+            case "-":
+                let subtractionTotal = parseInt(this.state.oldValue, 10) - parseInt(this.state.displayvalue, 10);
+                return subtractionTotal;
+            case "*":
+                console.log("old", this.state.oldValue);
+                console.log("new", this.state.displayvalue);
+                let multiplicationTotal = parseInt(this.state.oldValue, 10) * parseInt(this.state.displayvalue, 10);
+                return multiplicationTotal;
+            default:
+                break;
+        }
+    }
+
+
     getTotale() {
         switch (this.state.selectSymbol) {
             case "/":
                 let divisionTotal = parseInt(this.state.oldValue, 10) / parseInt(this.state.displayvalue, 10);
-                this.setState({ displayvalue: divisionTotal })
+                this.setState({
+                    displayvalue: divisionTotal, clearMode: true, oldValue: 0,
+                    selectSymbol: ""
+                })
                 break;
             case "+":
                 let additionTotal = parseInt(this.state.oldValue, 10) + parseInt(this.state.displayvalue, 10);
-                this.setState({ displayvalue: additionTotal })
+                this.setState({
+                    displayvalue: additionTotal, clearMode: true, oldValue: 0,
+                    selectSymbol: ""
+                })
                 break;
             case "-":
                 let subtractionTotal = parseInt(this.state.oldValue, 10) - parseInt(this.state.displayvalue, 10);
-                this.setState({ displayvalue: subtractionTotal })
+                this.setState({
+                    displayvalue: subtractionTotal, clearMode: true, oldValue: 0,
+                    selectSymbol: ""
+                })
                 break;
             case "*":
                 let multiplicationTotal = parseInt(this.state.oldValue, 10) * parseInt(this.state.displayvalue, 10);
-                this.setState({ displayvalue: multiplicationTotal })
+                this.setState({
+                    displayvalue: multiplicationTotal, clearMode: true, oldValue: 0,
+                    selectSymbol: ""
+                })
                 break;
-
             default:
                 break;
         }
     }
 
     handleKeyPress = (event) => {
-
         let { key } = event;
         if (key === 'Backspace') {
             event.preventDefault()
@@ -120,7 +192,6 @@ export default class Calculator extends React.Component {
         if (parseInt(key, 10)) {
             event.preventDefault()
             this.onHandlePress.bind(this, key)()
-
         }
         if (key === 'Enter') {
             event.preventDefault()
