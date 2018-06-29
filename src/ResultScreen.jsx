@@ -26,7 +26,7 @@ export default class Calculator extends React.Component {
     }
 
     onHandlePress(value) {
-        var displayvalue = (this.state.displayvalue === "0" ? "" : this.state.clearMode ? "" : parseFloat(this.state.displayvalue) ? (this.state.displayvalue).toString() : "") + value;
+        var displayvalue = (this.state.displayvalue === "0" ? "" : this.state.clearMode ? "" : parseFloat(this.state.displayvalue) || (/\./).test(this.state.displayvalue) ? (this.state.displayvalue).toString() : "") + value;
         this.setState({ displayvalue, clearMode: false })
     }
 
@@ -218,7 +218,7 @@ export default class Calculator extends React.Component {
             <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
                 <div className="calculatorBox">
                     <div className="calculatorDisplay">
-                        {this.state.displayvalue}
+                        {(this.state.displayvalue).toString()}
                     </div>
                     <div style={{ overflow: "hidden", display: "flex", flexDirection: "row" }}>
                         <div >
