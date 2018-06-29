@@ -26,7 +26,7 @@ export default class Calculator extends React.Component {
     }
 
     onHandlePress(value) {
-        var displayvalue = (this.state.displayvalue === "0" ? "" : this.state.clearMode ? "" : (this.state.displayvalue).toString()) + value;
+        var displayvalue = (this.state.displayvalue === "0" ? "" : this.state.clearMode ? "" : parseFloat(this.state.displayvalue) ? (this.state.displayvalue).toString() : "") + value;
         this.setState({ displayvalue, clearMode: false })
     }
 
@@ -39,16 +39,16 @@ export default class Calculator extends React.Component {
 
     handleDivision() {
         if (!this.state.oldValue) {
-            let oldValue = parseInt(this.state.displayvalue, 10);
+            let oldValue = parseFloat(this.state.displayvalue);
             this.setState({
-                displayvalue: "0",
+                displayvalue: "/",
                 selectSymbol: "/",
                 oldValue
             })
         } else {
             let oldValue = this.getTotaleWithSelectSymbol(this.state.selectSymbol)
             this.setState({
-                displayvalue: "0",
+                displayvalue: "/",
                 selectSymbol: "/",
                 oldValue
             })
@@ -59,16 +59,16 @@ export default class Calculator extends React.Component {
 
     handleSubtraction() {
         if (!this.state.oldValue) {
-            let oldValue = parseInt(this.state.displayvalue, 10);
+            let oldValue = parseFloat(this.state.displayvalue);
             this.setState({
-                displayvalue: "0",
+                displayvalue: "-",
                 selectSymbol: "-",
                 oldValue
             })
         } else {
             let oldValue = this.getTotaleWithSelectSymbol(this.state.selectSymbol)
             this.setState({
-                displayvalue: "0",
+                displayvalue: "-",
                 selectSymbol: "-",
                 oldValue
             })
@@ -77,16 +77,16 @@ export default class Calculator extends React.Component {
 
     handleAddition() {
         if (!this.state.oldValue) {
-            let oldValue = parseInt(this.state.displayvalue, 10);
+            let oldValue = parseFloat(this.state.displayvalue);
             this.setState({
-                displayvalue: "0",
+                displayvalue: "+",
                 selectSymbol: "+",
                 oldValue
             })
         } else {
             let oldValue = this.getTotaleWithSelectSymbol(this.state.selectSymbol)
             this.setState({
-                displayvalue: "0",
+                displayvalue: "+",
                 selectSymbol: "+",
                 oldValue
             })
@@ -94,9 +94,9 @@ export default class Calculator extends React.Component {
     }
     handleMultiplication() {
         if (!this.state.oldValue) {
-            let oldValue = parseInt(this.state.displayvalue, 10);
+            let oldValue = parseFloat(this.state.displayvalue);
             this.setState({
-                displayvalue: "0",
+                displayvalue: "*",
                 selectSymbol: "*",
                 oldValue
             })
@@ -104,7 +104,7 @@ export default class Calculator extends React.Component {
             let oldValue = this.getTotaleWithSelectSymbol(this.state.selectSymbol)
             //eval(parseInt(this.state.oldValue, 10) + this.state.selectSymbol + parseInt(this.state.displayvalue, 10));
             this.setState({
-                displayvalue: "0",
+                displayvalue: "*",
                 selectSymbol: "*",
                 oldValue
             })
@@ -113,18 +113,18 @@ export default class Calculator extends React.Component {
     getTotaleWithSelectSymbol(selectSymbol) {
         switch (selectSymbol) {
             case "/":
-                let divisionTotal = parseInt(this.state.oldValue, 10) / parseInt(this.state.displayvalue, 10);
+                let divisionTotal = parseFloat(this.state.oldValue) / parseFloat(this.state.displayvalue);
                 return divisionTotal;
             case "+":
-                let additionTotal = parseInt(this.state.oldValue, 10) + parseInt(this.state.displayvalue, 10);
+                let additionTotal = parseFloat(this.state.oldValue) + parseFloat(this.state.displayvalue);
                 return additionTotal;
             case "-":
-                let subtractionTotal = parseInt(this.state.oldValue, 10) - parseInt(this.state.displayvalue, 10);
+                let subtractionTotal = parseFloat(this.state.oldValue) - parseFloat(this.state.displayvalue);
                 return subtractionTotal;
             case "*":
                 console.log("old", this.state.oldValue);
                 console.log("new", this.state.displayvalue);
-                let multiplicationTotal = parseInt(this.state.oldValue, 10) * parseInt(this.state.displayvalue, 10);
+                let multiplicationTotal = parseFloat(this.state.oldValue) * parseFloat(this.state.displayvalue);
                 return multiplicationTotal;
             default:
                 break;
@@ -135,28 +135,28 @@ export default class Calculator extends React.Component {
     getTotale() {
         switch (this.state.selectSymbol) {
             case "/":
-                let divisionTotal = parseInt(this.state.oldValue, 10) / parseInt(this.state.displayvalue, 10);
+                let divisionTotal = parseFloat(this.state.oldValue) / parseFloat(this.state.displayvalue);
                 this.setState({
                     displayvalue: divisionTotal, clearMode: true, oldValue: 0,
                     selectSymbol: ""
                 })
                 break;
             case "+":
-                let additionTotal = parseInt(this.state.oldValue, 10) + parseInt(this.state.displayvalue, 10);
+                let additionTotal = parseFloat(this.state.oldValue) + parseFloat(this.state.displayvalue);
                 this.setState({
                     displayvalue: additionTotal, clearMode: true, oldValue: 0,
                     selectSymbol: ""
                 })
                 break;
             case "-":
-                let subtractionTotal = parseInt(this.state.oldValue, 10) - parseInt(this.state.displayvalue, 10);
+                let subtractionTotal = parseFloat(this.state.oldValue) - parseFloat(this.state.displayvalue);
                 this.setState({
                     displayvalue: subtractionTotal, clearMode: true, oldValue: 0,
                     selectSymbol: ""
                 })
                 break;
             case "*":
-                let multiplicationTotal = parseInt(this.state.oldValue, 10) * parseInt(this.state.displayvalue, 10);
+                let multiplicationTotal = parseFloat(this.state.oldValue) * parseFloat(this.state.displayvalue);
                 this.setState({
                     displayvalue: multiplicationTotal, clearMode: true, oldValue: 0,
                     selectSymbol: ""
@@ -189,7 +189,12 @@ export default class Calculator extends React.Component {
             event.preventDefault()
             this.handleSubtraction()
         }
-        if (parseInt(key, 10)) {
+
+        if (/^\d+$/.test(key)) {
+            event.preventDefault()
+            this.onHandlePress.bind(this, key)()
+        }
+        if (key === '.') {
             event.preventDefault()
             this.onHandlePress.bind(this, key)()
         }
@@ -235,7 +240,10 @@ export default class Calculator extends React.Component {
                             <MyButton onClick={this.onHandlePress.bind(this, 3)} className="btn btn-light" style={{ width: "80px", height: "50px" }} titale="3" />
                             <Multiplication onClick={this.handleMultiplication} />
 
-                            <button onClick={this.getTotale} className="btn  btn-block" style={{ height: "50px", backgroundColor: "#f2274f" }} > =</button>
+                            <MyButton onClick={this.onHandlePress.bind(this, 0)} className="btn btn-light" style={{ width: "80px", height: "50px" }} titale="0" />
+                            <MyButton onClick={this.onHandlePress.bind(this, ".")} className="btn btn-light" style={{ width: "80px", height: "50px" }} titale="." />
+
+                            <button onClick={this.getTotale} className="btn  " style={{ width: "158px", height: "50px", backgroundColor: "#f2274f" }} > =</button>
                         </div>
 
                     </div>
